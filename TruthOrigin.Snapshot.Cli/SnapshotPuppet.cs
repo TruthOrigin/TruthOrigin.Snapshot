@@ -316,7 +316,7 @@ namespace TruthOrigin.Snapshot.Cli
 
                         if (relativePaths.Count > 0)
                         {
-                            string firstPath = CombinePath("", relativePaths[0]) + "?truthseo-snapshot";
+                            string firstPath = CombinePath("", relativePaths[0]) + "?truth-snapshot";
                             Console.WriteLine($"[Snapshot] 🚀 Starting with first path: {firstPath}");
                             await page.EvaluateFunctionAsync("path => window.sendNavigate(path)", firstPath);
                             return;
@@ -358,7 +358,7 @@ namespace TruthOrigin.Snapshot.Cli
 
     window.sendNavigate = function(path) {{
       iframe.contentWindow.postMessage({{
-        type: 'truthseo:navigate',
+        type: 'truth:navigate',
         targetPath: path
       }}, '*');
     }}
@@ -366,7 +366,7 @@ namespace TruthOrigin.Snapshot.Cli
     window.snapshotAcknowledgeNext = function () {{
       currentIndex++;
       if (currentIndex < urls.length) {{
-        const path = combinePath('', urls[currentIndex]) + '?truthseo-snapshot';
+        const path = combinePath('', urls[currentIndex]) + '?truth-snapshot';
         console.log('[Proxy] 🧭 Sending next route:', path);
         sendNavigate(path);
       }} else {{
@@ -380,7 +380,7 @@ namespace TruthOrigin.Snapshot.Cli
       const data = event.data;
       if (!data?.type) return;
 
-      if (data.type === 'truthseo:snapshot') {{
+      if (data.type === 'truth:snapshot') {{
         const url = urls[currentIndex] || '[initial-index]';
         console.log(`[Proxy] 📸 Received snapshot for: ${{url}}`);
         window.onSnapshotReceived?.(data.html, url);
@@ -433,7 +433,7 @@ namespace TruthOrigin.Snapshot.Cli
         {
             var uriBuilder = new UriBuilder(url);
             var query = System.Web.HttpUtility.ParseQueryString(uriBuilder.Query);
-            query["truthseo-snapshot"] = string.Empty;
+            query["truth-snapshot"] = string.Empty;
             uriBuilder.Query = query.ToString();
             return uriBuilder.ToString();
         }
