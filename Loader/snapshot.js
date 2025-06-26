@@ -148,7 +148,7 @@
             head.insertBefore(versionMeta, head.querySelector("base") || head.firstChild);
 
             // 6. Inject snapshot-ready content wrapped in comments
-            const snapshotTag = doc.querySelector("truth-snapshot-ready");
+            const snapshotTag = doc.querySelector("snapshot-ready");
             if (snapshotTag) {
                 const content = snapshotTag.innerHTML.trim();
                 if (content.length > 0) {
