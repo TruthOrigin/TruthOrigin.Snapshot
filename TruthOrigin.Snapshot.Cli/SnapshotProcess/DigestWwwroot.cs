@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace TruthOrigin.Snapshot.Cli
+namespace TruthOrigin.Snapshot.Cli.SnapshotProcess
 {
-    public class SnapshotRun
+    /// <summary>
+    /// Digest the wwwroot folder and validate
+    /// </summary>
+    public class DigestWwwroot
     {
-        public async Task Start(string folderPath, string? apiKey, bool headless = true)
+        public async Task<List<string>> ValidateFolderPath(string folderPath)
         {
             Console.WriteLine($"[Info] Validating folder: {folderPath}");
 
@@ -72,7 +75,7 @@ namespace TruthOrigin.Snapshot.Cli
                 .ToList();
 
             Console.WriteLine("[Info] Passing relative URLs to snapshot runner...");
-            await new Snapshot().Start(relativePaths, folderPath, headless);
+            return relativePaths;
         }
 
         private List<string> ParseSitemapsFromRobots(string robotsPath)

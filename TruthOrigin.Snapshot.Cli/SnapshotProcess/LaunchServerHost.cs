@@ -11,11 +11,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace TruthOrigin.Snapshot.Cli
+namespace TruthOrigin.Snapshot.Cli.SnapshotProcess
 {
-    internal class Snapshot
+    /// <summary>
+    /// Launch a local server to host the WebAssembly/SPA
+    /// </summary>
+    internal class LaunchServerHost
     {
-        public async Task Start(List<string> urls, string folderPath, bool headless)
+        public async Task<(IWebHost Host, string BaseUrl)> Start(List<string> urls, string folderPath, bool headless)
         {
             int port = GetAvailablePort();
             string baseUrl = $"http://localhost:{port}";
@@ -67,14 +70,9 @@ namespace TruthOrigin.Snapshot.Cli
             var serverTask = host.RunAsync();
 
             // Start snapshot puppet after small delay to ensure server is ready
-            await WaitUntilAvailable(baseUrl);
+            await WaitUntilAvailable(baseUrl);            
 
-            var puppet = new SnapshotPuppet();
-            await puppet.Start(folderPath, baseUrl, urls, headless);
-
-            // Optionally shut down server after puppet is done
-            Console.WriteLine("[Server] Snapshot complete. Shutting down...");
-            await host.StopAsync();
+            return (host, baseUrl);
         }
 
         private static int GetAvailablePort()
