@@ -38,8 +38,20 @@ namespace TruthOrigin.Snapshot.Cli
 #endif
             try
             {
-                await new SnapshotRun().Start(folderPath!, apiKey);
+                folderPath = Path.GetFullPath(folderPath!);
+
+                if (!Directory.Exists(folderPath))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"[Error] The folder '{folderPath}' does not exist.");
+                    Console.ResetColor();
+                    return 1;
+                }
+
+                Console.WriteLine($"[Info] Using snapshot folder: {folderPath}");
+                await new SnapshotRun().Start(folderPath, apiKey);
             }
+
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
