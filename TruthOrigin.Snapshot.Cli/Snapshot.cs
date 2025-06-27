@@ -15,7 +15,7 @@ namespace TruthOrigin.Snapshot.Cli
 {
     internal class Snapshot
     {
-        public async Task Start(List<string> urls, string folderPath)
+        public async Task Start(List<string> urls, string folderPath, bool headless)
         {
             int port = GetAvailablePort();
             string baseUrl = $"http://localhost:{port}";
@@ -70,7 +70,7 @@ namespace TruthOrigin.Snapshot.Cli
             await WaitUntilAvailable(baseUrl);
 
             var puppet = new SnapshotPuppet();
-            await puppet.Start(folderPath, baseUrl, urls);
+            await puppet.Start(folderPath, baseUrl, urls, headless);
 
             // Optionally shut down server after puppet is done
             Console.WriteLine("[Server] Snapshot complete. Shutting down...");

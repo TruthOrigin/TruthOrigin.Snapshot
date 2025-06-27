@@ -9,7 +9,7 @@ namespace TruthOrigin.Snapshot.Cli
 {
     public class SnapshotRun
     {
-        public async Task Start(string folderPath, string? apiKey)
+        public async Task Start(string folderPath, string? apiKey, bool headless = true)
         {
             Console.WriteLine($"[Info] Validating folder: {folderPath}");
 
@@ -72,7 +72,7 @@ namespace TruthOrigin.Snapshot.Cli
                 .ToList();
 
             Console.WriteLine("[Info] Passing relative URLs to snapshot runner...");
-            await new Snapshot().Start(relativePaths, folderPath);
+            await new Snapshot().Start(relativePaths, folderPath, headless);
         }
 
         private List<string> ParseSitemapsFromRobots(string robotsPath)

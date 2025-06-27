@@ -34,7 +34,7 @@ namespace TruthOrigin.Snapshot.Cli
             ["win-x86"] = "https://huggingface.co/datasets/magiccodingman/chromium-bundles/resolve/main/bundles/win-x86.tar.xz?download=true"
         };
 
-        public async Task Start(string folderPath, string baseUrl, List<string> relativePaths)
+        public async Task Start(string folderPath, string baseUrl, List<string> relativePaths, bool headless)
         {
             Console.WriteLine("[Puppet] Initializing...");
 
@@ -80,7 +80,7 @@ namespace TruthOrigin.Snapshot.Cli
                 try
                 {
                     string chromeExe = FindExecutable(runtimeRoot, target.Rid, target.Folder);
-                   snapshots = await BeginAsync(folderPath, baseUrl,relativePaths, chromeExe);
+                   snapshots = await BeginAsync(folderPath, baseUrl,relativePaths, chromeExe, headless);
 
                     break;
                 }
@@ -107,7 +107,7 @@ namespace TruthOrigin.Snapshot.Cli
                 }
             }
 
-            UpdateHeadersAndRedirects(folderPath, relativePaths);
+            UpdateHeadersAndRedirects(folderPath, relativePaths, headless);
         }
         public static string ToUpperCamelCase(string input)
         {
@@ -139,7 +139,7 @@ namespace TruthOrigin.Snapshot.Cli
         }
 
 
-        private void UpdateHeadersAndRedirects(string folderPath, List<string> relativePaths)
+        private void UpdateHeadersAndRedirects(string folderPath, List<string> relativePaths, bool headless)
         {
             var headersPath = Path.Combine(folderPath, "_headers");
             var redirectsPath = Path.Combine(folderPath, "_redirects");
@@ -285,20 +285,35 @@ namespace TruthOrigin.Snapshot.Cli
 
 
 
-        private async Task<List<(string url, string html)>> BeginAsync(string folderPath, string baseUrl, List<string> relativePaths, string chromeExe)
+        private async Task<List<(string url, string html)>> BeginAsync(string folderPath, string baseUrl, 
+            List<string> relativePaths, string chromeExe, bool headless)
         {
             Console.WriteLine($"[Puppet] Launching Chromium executable: {chromeExe}");
 
             var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
                 ExecutablePath = chromeExe,
-                Headless = false,
+                Headless = headless, // or false for debugging
+                Args = new[]
+    {
+       "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-cache",
+    "--disk-cache-size=0",
+    "--disable-application-cache",
+    "--disable-offline-load-stale-cache",
+    "--disable-gpu-shader-disk-cache",
+    "--media-cache-size=0",
+    "--disk-cache-dir=/dev/null", // Ignored on Windows
+    "--window-size=1200,800"
+    }
             });
+
             try
             {
 
                 var page = await browser.NewPageAsync();
-
+                await page.SetCacheEnabledAsync(false);
                 var snapshotCompleteSignal = new TaskCompletionSource<bool>();
                 var snapshots = new List<(string url, string html)>();
                 bool hasStarted = false;

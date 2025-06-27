@@ -7,6 +7,7 @@ namespace TruthOrigin.Snapshot.Cli
     {
         static async Task<int> Main(string[] args)
         {
+            bool headless = true;
 #if DEBUG
             string folderPath = @"";
             string? apiKey = null;
@@ -35,6 +36,8 @@ namespace TruthOrigin.Snapshot.Cli
             {
                 Console.WriteLine($"[Info] API Key provided: {apiKey}");
             }
+
+            headless = !parsedArgs.ContainsKey("--show");
 #endif
             try
             {
@@ -48,8 +51,8 @@ namespace TruthOrigin.Snapshot.Cli
                     return 1;
                 }
 
-                Console.WriteLine($"[Info] Using snapshot folder: {folderPath}");
-                await new SnapshotRun().Start(folderPath, apiKey);
+                Console.WriteLine($"[Info] Using snapshot folder: {folderPath}");                
+                await new SnapshotRun().Start(folderPath, apiKey, headless);
             }
 
             catch (Exception ex)
@@ -87,12 +90,13 @@ namespace TruthOrigin.Snapshot.Cli
             Console.WriteLine("SnapshotTool - Static Snapshot Generator for WASM wwwroot folders");
             Console.WriteLine();
             Console.WriteLine("Usage:");
-            Console.WriteLine("  SnapshotTool --folder <path> [--key <apikey>] [--help]");
+            Console.WriteLine("  SnapshotTool --folder <path> [--key <apikey>] [--show] [--help]");
             Console.WriteLine();
             Console.WriteLine("Arguments:");
             Console.WriteLine("  --folder   REQUIRED. The path to the published wwwroot of your WASM project.");
             Console.WriteLine("  --key      OPTIONAL. API key for future authenticated services.");
             Console.WriteLine("  --help     Displays this help screen.");
+            Console.WriteLine("  --show     OPTIONAL. Launch the browser in visible (non-headless) mode.");
             Console.WriteLine();
             Console.WriteLine("Examples:");
             Console.WriteLine(@"  SnapshotTool --folder ""C:\Sites\MyApp\wwwroot""");
